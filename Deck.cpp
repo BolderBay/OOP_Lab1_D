@@ -62,6 +62,10 @@ bool Card::operator> (Card sortCard)
 	if (suit1pos == suit2pos && rank > sortCard.getRank()) return true;
 	if (suit1pos == suit2pos && rank < sortCard.getRank()) return false;
 }
+bool Card::operator!= (Card sortCard) {
+	if (suit == sortCard.suit and rank == sortCard.rank) return false;
+	else return true;
+}
 
 Deck& Deck::operator++()                  // перегрузка оператора ++ для добавления случайной карты в колоду
 {
@@ -136,6 +140,21 @@ Deck& Deck::addCard(Card& card) {
 	Card* randomlist = new Card[lenght+1];
 	for (int i = 0; i < lenght; ++i) randomlist[i] = list[i];
 	randomlist[lenght+1] = additionCard;
+	delete[] list;
+	list = randomlist;
+	lenght = lenght + 1;
+	return *this;
+};
+
+Deck& Deck::addAnyCard(Card& card) {
+	Card additionCard(card.getRank(), card.getSuit());
+	if (lenght >= QUANTITY) throw std::exception("The deck is full\n");
+	Card* randomlist = new Card[lenght + 1];
+	for (int i = 0; i < lenght; ++i) randomlist[i] = list[i];
+	randomlist[lenght + 1] = additionCard;
+	delete[] list;
+	list = randomlist;
+	lenght = lenght + 1;
 	return *this;
 };
 
@@ -170,6 +189,7 @@ std::istream& operator >>(std::istream& c, Deck& d)
 		}
 		catch (std::exception& error) {
 			c.setstate(std::ios::failbit);
+			return c;
 		}
 	}
 	return c;
@@ -189,6 +209,28 @@ Card Deck::getCard(int index) {
 	return list[index];
 }
 
+Deck& Deck::operator =(const Deck& d) {
+	if (this != &d)
+	{
+		delete[] list;
+		lenght = d.getLenght();
+		Card* list = new Card [lenght];
+		for (int i = 0; i < lenght; i++)
+			list[i] = d.list[i];
+	}
+	return *this;
+}
+
+Deck& Deck::operator =(Deck&& d) {
+	if (this != &d) {
+		delete[] list;
+		list = d.list;
+		lenght = d.lenght;
+		d.list = nullptr;
+	}
+	return *this;
+}
+
 void Deck::shiftCard() {
 	if (lenght == 0) throw std::exception("Zero length");
 	Card tmp1;
@@ -198,31 +240,13 @@ void Deck::shiftCard() {
 	list[lenght - 1] = tmp1;
 }
 
-Deck& Deck::operator =(Deck& d) {
-	if (this != &d)
-	{
-		memset(list, 0, sizeof(list));
-		lenght = d.getLenght();
-		Card* list = new Card [lenght];
-		for (int i = 0; i < lenght; i++)
-			list[i] = d.getCard(i);
-	}
-	return *this;
-}
-
-Deck& Deck::operator +=(Deck& d)
-{
-	if (this != &d)
-	{
-		memset(list, 0, sizeof(list));
-		lenght = d.getLenght();
-		Card* list = new Card[lenght];
-		for (int i = 0; i < lenght; i++)
-			list[i] = d.getCard(i);
-	}
-
-	for (int i = 0; i < lenght; ++i) {
-		delete[] d.list;
-	}
+Deck& Deck::delCard() {
+	if (lenght == 0) throw std::exception("Zero length");
+	shiftCard();
+	Card* randomlist = new Card[lenght - 1];
+	for (int i = 0; i < lenght-1; ++i) randomlist[i] = list[i];
+	delete[] list;
+	list = randomlist;
+	lenght--;
 	return *this;
 }

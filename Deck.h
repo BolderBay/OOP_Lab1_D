@@ -14,6 +14,7 @@ public:
     Card& setRank(int rank);       // Сеттер ранга
     Card& setSuit(char suit);      // Сеттер масти
     bool operator> (Card sortCard);
+    bool operator!= (Card sortCard);
 };
 
 class Deck {                        // класс колоды
@@ -28,11 +29,18 @@ public:
             list[filler] = basekard;
         };
     };
-    Deck(int number) : lenght(number), list(new Card[lenght])              // Конструктор, создающий колоду из number карт, определяемых случайно
+    Deck(int number)              // Конструктор, создающий колоду из number карт, определяемых случайно
     {
-        srand(time(0));
-        Card* randomlist = new Card[QUANTITY];
         if (number > QUANTITY || number < 0) throw std::exception("Invalid number\n");
+        lenght = number; 
+        list = new Card[lenght];
+        
+        srand(time(0)+rand());
+        
+        Card* randomlist;
+        try {randomlist = new Card[QUANTITY];}
+        catch (std::bad_alloc err) { delete[] list; throw err; }
+        
         for (int filler = 0; filler < QUANTITY; ++filler) {
             Card basekard((filler % MAXRANG) + 1, letters[filler % (sizeof(letters) / sizeof(letters[0]))]);
             randomlist[filler] = basekard;
@@ -51,19 +59,31 @@ public:
         for (int transf = 0; transf < lenght; ++transf) {
             list[transf] = randomlist[transf];
         };
-        memset(randomlist, 0, sizeof(randomlist));
+        delete[] randomlist;
     };                     
-    Deck(Card& card) : lenght(1), list(new Card[lenght])                 // Конструктор, создающий колоду из одной указанной карты
+    Deck(const Card& card) : lenght(1), list(new Card[lenght])                 // Конструктор, создающий колоду из одной указанной карты
     {
         list[0] = card;
-    };                      
+    };
+    Deck(const Deck& deck) {
+        lenght = deck.getLenght();
+        list = new Card[lenght];
+        for (int i = 0; i < lenght; i++)
+            list[i] = deck.list[i];
+    }
+    Deck(Deck&& deck) {
+        lenght = deck.lenght;
+        list = deck.list;
+        deck.list = nullptr;
+    }
     char getSuit(int position) const;     // Гттер на масть карты по ее позиции
     int getRank(int position) const;      // Геттер на ранг карты по ее позиции
     int getLenght() const;                // Геттер на длину колоды
     Deck selectSuit(char selectSuit, Deck& newdeck);     // Возврат колоды по масти
     void sort();                          // Сортировка
     void NewSort();                       // Новая сортировка
-    Deck& addCard(Card& card);              // Доп функция для доавления карты в колоду  
+    Deck& addCard(Card& card);              // Доп функция для доавления карты в колоду
+    Deck& addAnyCard(Card& card);
     friend std::ostream& operator <<(std::ostream& c, const Deck& d);   // Перегрузка оператора << для вывода
     friend std::istream& operator >>(std::istream& c, Deck& d);         // Перегрузка оператора >> для ввода
     Deck& operator++();                                                 // Перегрузка оператора ++ для добавления случайной карты в колоду
@@ -71,12 +91,12 @@ public:
     char operator() (int index) const;                                  // Перегрузка оператора () для получения ранга карты в позиции index
     Card getCard(int index);                                            // Дополнительный метод получения карты
     void shiftCard();                                                   // Дополнительный метод сдвига карт в колоде
-
+    Deck& delCard();                                                    // Дополнительный метод удаления карты
     ~Deck() 
     {
-        memset(list, 0, sizeof(list));
+       delete[] list;
     }
-    Deck& operator +=(Deck& d); // ??????????? ?????? ?? ?????? ??????? ? ??????	
-    Deck& operator =(Deck& d); // ??????????? ?????? ?? ?????? ??????? ? ??????
+    Deck& operator =(const Deck& d);
+    Deck& operator =(Deck&& d);
 };
 
