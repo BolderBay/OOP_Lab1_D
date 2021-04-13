@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Deck.h"
 #include <strstream>
 #include <stdio.h>
@@ -63,7 +64,7 @@ bool Card::operator> (Card sortCard)
 	if (suit1pos == suit2pos && rank < sortCard.getRank()) return false;
 }
 bool Card::operator!= (Card sortCard) {
-	if (suit == sortCard.suit and rank == sortCard.rank) return false;
+	if (suit == sortCard.suit && rank == sortCard.rank) return false;
 	else return true;
 }
 
