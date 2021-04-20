@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "gtest\\gtest.h"
-#include "C:\Users\ΐλεκρΰνδπ\source\repos\LaboratoryWork1-D\Deck.h"
+#include "C:\Users\Γ€Γ«Γ¥ΓªΓ±Γ Γ­Γ¤Γ°\source\repos\LaboratoryWork1-D\Deck.h"
 
 #include <iostream>
 #include <string>
@@ -161,7 +161,7 @@ TEST(DeckMethods, TestImputMethods)
 
 	ASSERT_EQ(countcards, testdeck.getLenght());
 	for (int count = 0; count < testdeck.getLenght(); ++count) {
-		if (testdeck.getRank(count) == cards[count].getRank()) checkFlag = true;
+		if (testdeck.getRank(count) == cards[count].getRank()) checkFlag = false;
 	}
 	ASSERT_EQ(true, checkFlag);
 }
