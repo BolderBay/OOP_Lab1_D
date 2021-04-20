@@ -155,10 +155,6 @@ TEST(DeckMethods, TestImputMethods)
 	filecards >> testdeck;
 	filecards.close();
 	
-	for (int i = 0; i < testdeck.getLenght(); ++i) {
-		std::cout << testdeck.getRank(i) << testdeck.getSuit(i) <<std::endl;
-	}
-
 	ASSERT_EQ(countcards, testdeck.getLenght());
 	for (int count = 0; count < testdeck.getLenght(); ++count) {
 		if (testdeck.getRank(count) == cards[count].getRank()) checkFlag = false;
