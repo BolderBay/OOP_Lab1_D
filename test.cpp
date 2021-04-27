@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "gtest\\gtest.h"
-#include "C:\Users\ГЂГ«ГҐГЄГ±Г Г­Г¤Г°\source\repos\LaboratoryWork1-D\Deck.h"
+#include "C:\Users\Александр\source\repos\LaboratoryWork1-D\Deck.h"
 
 #include <iostream>
 #include <string>
@@ -15,7 +15,7 @@ TEST(DeckConstructor, DefaultConstructor)
 		ASSERT_EQ((count % MAXRANG)+1, testdeck.getRank(count));
 		ASSERT_EQ(letters[count % (sizeof(letters) / sizeof(letters[0]))], testdeck.getSuit(count));
 	}
-	for (int count = 0; count < testdeck.getLenght(); ++count) {
+	for (int count = 0; count < testdeck.getLenght(); ++count) {			// необязательно
 		for (int compare = count; compare < testdeck.getLenght(); ++compare) {
 			if (testdeck.getSuit(count) == testdeck.getSuit(compare) && testdeck.getRank(count) == testdeck.getRank(compare) && count != compare) uniqFlag = false;
 		}
@@ -23,7 +23,7 @@ TEST(DeckConstructor, DefaultConstructor)
 	ASSERT_EQ(true, uniqFlag);
 }
 
-TEST(DeckConstructor, InitConstructors_1)
+TEST(DeckConstructor, InitConstructors_1) //добавить проверку n
 {
 	int n = 5;
 	bool uniqFlag = true;
@@ -59,8 +59,8 @@ TEST(DeckConstructor, InitConstructors_3)
 	for(int count = 0; count < testdeck.getLenght(); ++count) {
 		if (testdeck.getRank(count) != checkDesk.getRank(count) || testdeck.getSuit(count) != checkDesk.getSuit(count)) identicalFlag = false;
 	}
-	ASSERT_EQ(true, identicalFlag);
-	for (int count = 0; count < testdeck.getLenght(); ++count) {
+	ASSERT_EQ(true, identicalFlag);									// необязательно
+	for (int count = 0; count < testdeck.getLenght(); ++count) {			
 		for (int compare = count; compare < testdeck.getLenght(); ++compare) {
 			if (testdeck.getSuit(count) == testdeck.getSuit(compare) && testdeck.getRank(count) == testdeck.getRank(compare) && count != compare) uniqFlag = false;
 		}
@@ -100,7 +100,7 @@ TEST(DeckMethods, TestMethods)
 	Deck selectsuitDeck(0);
 	Deck sortDeck(10);
 
-	simpleDeck.delCard();
+	simpleDeck.delCard();			// проверить возвращаемый адрес
 	ASSERT_EQ(QUANTITY - 1, simpleDeck.getLenght());
 	for (int count = 0; count < simpleDeck.getLenght(); ++count) {
 		if (simpleDeck.getRank(count) == QUANTITY % MAXRANG && simpleDeck.getSuit(count) == QUANTITY % (sizeof(letters) / sizeof(letters[0]))) findingFlag = true;
@@ -132,7 +132,7 @@ TEST(DeckMethods, TestMethods)
 	ASSERT_EQ(true, positionFlag);
 }
 
-TEST(DeckMethods, TestImputMethods) 
+TEST(DeckMethods, TestImputMethods) // тут какая-то шляпа, проверка потока, лучше поток а не файл
 {
 	Deck testdeck(0);
 	int countcards = 3;
@@ -154,10 +154,45 @@ TEST(DeckMethods, TestImputMethods)
 	std::ifstream filecards("cards.txt");
 	filecards >> testdeck;
 	filecards.close();
-	
+
 	ASSERT_EQ(countcards, testdeck.getLenght());
 	for (int count = 0; count < testdeck.getLenght(); ++count) {
-		if (testdeck.getRank(count) == cards[count].getRank()) checkFlag = false;
+		if (testdeck.getRank(count) == cards[count].getRank()) checkFlag = true;
 	}
 	ASSERT_EQ(true, checkFlag);
+}
+
+TEST(DeckMethods, TestAddCards) 
+{
+	Deck zeroDeck(0);
+	Deck fullDeck;
+	Deck testDeck(0);
+	Card h1(1, 'h');
+	int n = 5;
+
+	Deck* adress = &zeroDeck;
+	zeroDeck.addCard(h1);
+	ASSERT_EQ(adress, &zeroDeck);
+	ASSERT_EQ(1, zeroDeck.getLenght());
+	ASSERT_EQ(1, zeroDeck.getRank(0));
+	ASSERT_EQ('h', zeroDeck.getSuit(0));
+
+
+	for (int adder = 0; adder < n; ++adder) {
+		testDeck.addCard(Card(adder+1, letters[adder % (sizeof(letters) / sizeof(letters[0]))]));
+	}
+
+	ASSERT_EQ(n, testDeck.getLenght());
+	for (int checker = 0; checker < n; ++checker) {
+		ASSERT_EQ(checker + 1, testDeck.getRank(checker));
+		ASSERT_EQ(letters[checker % (sizeof(letters) / sizeof(letters[0]))], testDeck.getSuit(checker));
+	}
+	
+	ASSERT_THROW(zeroDeck.addCard(h1), std::exception);
+	ASSERT_THROW(fullDeck.addCard(h1), std::exception);
+
+
+
+
+
 }
